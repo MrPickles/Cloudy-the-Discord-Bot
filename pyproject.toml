@@ -2,13 +2,14 @@
 name = "repl_python3_TatteredGlassSubweb"
 version = "0.1.0"
 description = ""
-authors = ["liuandrewk <<>>"]
+authors = ["Andrew Liu"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
 discord = "^1.0.1"
 discord-py-slash-command = "^1.2.0"
 openai = "^0.6.4"
+replit = "^3.1.0"
 
 [tool.poetry.dev-dependencies]
 
