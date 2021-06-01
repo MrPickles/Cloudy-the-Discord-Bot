@@ -4,6 +4,8 @@ from typing import List
 import openai
 from openai.error import OpenAIError
 
+import db
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,6 +35,7 @@ def complete(
             stop=stop,
         )
         logger.info(res)
+        db.increment_gpt_completions()
         return res["choices"][0]["text"]
     except OpenAIError as e:
         logger.error(e)

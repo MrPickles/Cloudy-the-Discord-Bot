@@ -9,6 +9,7 @@ from openai.error import OpenAIError
 
 import db
 import gpt
+import locks
 
 
 logger = logging.getLogger(__name__)
@@ -29,11 +30,20 @@ class DiscordBot(commands.Bot):
             },
         }
         self.history = defaultdict(list)
-        self.__init_slash_commands()
+        self.lock = locks.Lock()
+        self._init_slash_commands()
    
     async def on_ready(self):
         logger.info("We have logged in as %s", self.user)
         db.set_last_init()
+
+    async def on_guild_join(self, guild):
+        logger.info("Joined guild: %d", guild.id)
+        for channel in guild.text_channels:
+            # TODO: make sure this works properly
+            if channel.name == "debug":
+                await channel.send("Hello! I just joined.")
+        db.increment_guild_count()
 
     async def on_message(self, message):
         if message.author == self.user:
@@ -52,7 +62,10 @@ class DiscordBot(commands.Bot):
         prompt = self._build_prompt(guild_id, message.content)
         config = self.config[mode]
         try:
+            if not self.lock.claim_lock(guild_id):
+                return
             response = gpt.complete(prompt, [config["p1"], config["p2"]])
+            self.lock.release_lock(guild_id)
             if mode == "chat":
                 self._update_history(guild_id, message.content, response)
             elif mode == "react":
@@ -60,6 +73,7 @@ class DiscordBot(commands.Bot):
             await message.channel.send(response)
         except OpenAIError as e:
             await message.channel.send(str(e))
+            self.lock.release_lock(guild_id)
 
         # https://discordpy.readthedocs.io/en/stable/faq.html#why-does-on-message-make-my-commands-stop-working
         await self.process_commands(message)
@@ -77,8 +91,14 @@ class DiscordBot(commands.Bot):
         history = []
         if mode == "react":
             history = [
-                ("a red button that says stop", "<button style={{color: 'white', backgroundColor: 'red'}}>Stop</button>"),
-                ("a blue box that contains 3 yellow circles with red borders", "<div style={{backgroundColor: 'blue', padding: 20}}><div style={{backgroundColor: 'yellow', border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div><div style={{backgroundColor: 'yellow', borderWidth: 1, border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div><div style={{backgroundColor: 'yellow', borderWidth: 1, border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div></div>"),
+                (
+                    "a red button that says stop",
+                    "<button style={{color: 'white', backgroundColor: 'red'}}>Stop</button>",
+                ),
+                (
+                    "a blue box that contains 3 yellow circles with red borders",
+                    "<div style={{backgroundColor: 'blue', padding: 20}}><div style={{backgroundColor: 'yellow', border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div><div style={{backgroundColor: 'yellow', borderWidth: 1, border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div><div style={{backgroundColor: 'yellow', borderWidth: 1, border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div></div>",
+                ),
             ]
         elif mode == "chat":
             if guild_id not in self.history:
@@ -104,16 +124,71 @@ class DiscordBot(commands.Bot):
             """
         ).rstrip()
 
-    def __init_slash_commands(self):
+    def _init_slash_commands(self):
         cmd = SlashCommand(self, sync_commands=True)
         guild_ids = [326580881965842433]
-      
+       
+        @cmd.slash(
+            name="help",
+            description="Get help and usage details for this bot.",
+            guild_ids=guild_ids,
+        )
+        async def _help(ctx):
+            await ctx.send(
+                dedent(
+                    f"""
+                    Hello! :wave: I'm Big Bob, your virtual friend powered by GPT-3! To get started, send a message in this server and see how I respond.
+
+                    I also support several commands that you can invoke:
+
+                    :robot: `/about`: Displays general information about me.
+                    :question: `/help`: Displays this message.
+                    :traffic_light: `/status`: Checks my latency and interaction mode.
+                    :bar_chart: `/metrics`: Lists global statistics about me.
+                    :currency_exchange: `/switch`: Changes my interaction mode. I can have a conversation, generate React code, or stay silent.
+                    :steam_locomotive: `/engines`: Lists available GPT-3 engines. (Not recommended.)
+                    :tickets: `/complete`: Sends raw input to GPT-3 for completion. (Not recommended.)
+                    :knife: `/amongus`: Displays the selected map for the game _Among Us_. This has nothing to do with AI, but it's still useful...
+                    """
+                ).strip()
+            )
+
+        @cmd.slash(
+            name="about",
+            description="Show general information about this bot.",
+            guild_ids=guild_ids,
+        )
+        async def _about(ctx):
+            await ctx.send(
+                # TODO: Add links and whatnot
+                dedent(
+                    f"""
+                    Hello! :wave: I'm Big Bob, your virtual friend powered by GPT-3! To get started, send a message in this server and see how I respond.
+                    """
+                ).strip()
+            )
+
+        @cmd.slash(
+            name="metrics",
+            description="Show global statistics about this bot.",
+            guild_ids=guild_ids,
+        )
+        async def _metrics(ctx):
+            await ctx.send(
+                dedent(
+                    f"""
+                    GPT-3 completions generated: {db.get_gpt_completions()}
+                    Discord servers joined: {db.get_guild_count()}
+                    """
+                ).strip()
+            )
+
         @cmd.slash(
             name="status",
             description="Get the general bot status and latency.",
             guild_ids=guild_ids,
         )
-        async def _ping(ctx):
+        async def _status(ctx):
             latency = round(self.latency * 1000, 3)
             mode = db.get_mode(ctx.guild.id)
             await ctx.send(f"I received your ping in {latency} ms. I'm currently in `{mode}` mode.")
@@ -130,7 +205,7 @@ class DiscordBot(commands.Bot):
                     required=True,
                     choices=[
                         create_choice(
-                            name="Chat Bot",
+                            name="Conversation Mode",
                             value="chat",
                         ),
                         create_choice(
@@ -147,7 +222,12 @@ class DiscordBot(commands.Bot):
         )
         async def _switch(ctx, mode: str):
             db.switch_mode(ctx.guild.id, mode)
-            await ctx.send(f"I'm now in `{mode}` mode.")
+            replies = {
+                "chat": "I'm in chat mode. Say something and we can have an AI-powered conversation.",
+                "react": "I will now generate code. Describe a UI you'd like to see, and I'll generate the React code!",
+                "silence": "I'm in silent mode now. I won't answer messages on this server unless otherwise configured.",
+            }
+            await ctx.send(replies[mode])
     
         @cmd.slash(
             name="engines",
