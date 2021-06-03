@@ -211,6 +211,7 @@ class Cloudy(commands.Bot):
             This command was intended for developers and will not be helpful or
             interesting to users.
             """
+            await ctx.defer()
             try:
                 engines = gpt.engines()
                 msg = "The following GPT-3 engines are available:\n"
@@ -238,6 +239,7 @@ class Cloudy(commands.Bot):
             This command was intended for developers and will not be helpful or
             interesting to users.
             """
+            await ctx.defer()
             try:
                 res = gpt.complete(prompt, max_tokens=50)
                 await ctx.send(f"**{prompt[1:-1]}** {res}")

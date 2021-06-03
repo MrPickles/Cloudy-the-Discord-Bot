@@ -1,15 +1,19 @@
 # Cloudy - The Hacker's Assistant
 
-Cloudy is a friendly Discord bot, designed to help out the hacker.
-Cloudy has various talents:
+Cloudy is a friendly Discord bot, designed to help a Discord server full of hackers of all interests.
+Cloudy has various talents depending on the situation:
 
-* AI-powered chat if you're lonely or need a somewhat smart bot.
-* Generates react code from your description if you don't know how to code.
-* Shows you the map in Among Us so you don't get lost and stabbed.
+* AI-powered chat if you're lonely or need someone to bounce ideas off of.
+* Generates react code from your description to help with coding
+* Shows you the map in Among Us when you're feeling social and want to have some recreation.
 
 Invite him to your server with [this link][1].
 
 _Imagine a demo video link here_
+
+* also link to GH
+* link to REPLIT
+* link to my twitter or something
 
 ## User Guide & Features
 
