@@ -8,27 +8,16 @@ from discord_slash.utils.manage_commands import create_option, create_choice
 from openai.error import OpenAIError
 
 import db
+import fixtures
 import gpt
 import locks
 
 
 logger = logging.getLogger(__name__)
 
-
-class DiscordBot(commands.Bot):
+class Cloudy(commands.Bot):
     def __init__(self, *args, **kwargs):
-        super(DiscordBot, self).__init__(*args, **kwargs)
-        self.config = {
-            "chat": {
-                "p1": "Human:",
-                "p2": "AI:",
-                "starter": "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.",
-            },
-            "react": {
-                "p1": "description:",
-                "p2": "code:",
-            },
-        }
+        super(Cloudy, self).__init__(*args, **kwargs)
         self.history = defaultdict(list)
         self.lock = locks.Lock()
         self._init_slash_commands()
@@ -40,43 +29,40 @@ class DiscordBot(commands.Bot):
     async def on_guild_join(self, guild):
         logger.info("Joined guild: %d", guild.id)
         for channel in guild.text_channels:
-            # TODO: make sure this works properly
-            if channel.name == "debug":
-                await channel.send("Hello! I just joined.")
+            if channel.name == "general":
+                await channel.send(fixtures.introduction)
         db.increment_guild_count()
 
     async def on_message(self, message):
         if message.author == self.user:
             return
 
-        if message.channel.id != 705667675292172288:
-            # TODO: for now, only use the debug channel
+        if message.channel.id == 326580881965842433:
+            # TODO: for now, skip the general channel
             return
 
         guild_id = message.guild.id
         mode = db.get_mode(guild_id)
-        if mode == "silence":
+        if mode == fixtures.silence:
             logger.debug("Bot is in silence mode. Skipping interaction in guild %d", guild_id)
             return
 
+        if not self.lock.claim_lock(guild_id):
+            logger.info("Guild %d currently holds a lock; ignoring new messages...", guild_id)
+            return
         prompt = self._build_prompt(guild_id, message.content)
-        config = self.config[mode]
+        config = fixtures.config[mode]
         try:
-            if not self.lock.claim_lock(guild_id):
-                return
             response = gpt.complete(prompt, [config["p1"], config["p2"]])
-            self.lock.release_lock(guild_id)
-            if mode == "chat":
+            if mode == fixtures.chat:
                 self._update_history(guild_id, message.content, response)
-            elif mode == "react":
+            elif mode == fixtures.react:
                 response = f"```{response}```"
             await message.channel.send(response)
         except OpenAIError as e:
             await message.channel.send(str(e))
-            self.lock.release_lock(guild_id)
 
-        # https://discordpy.readthedocs.io/en/stable/faq.html#why-does-on-message-make-my-commands-stop-working
-        await self.process_commands(message)
+        self.lock.release_lock(guild_id)
 
     def _update_history(self, guild_id: int, opener: str, response: str):
         self.history[guild_id].append((opener, response))
@@ -85,28 +71,16 @@ class DiscordBot(commands.Bot):
 
     def _build_prompt(self, guild_id: int, msg: str) -> str:
         mode = db.get_mode(guild_id)
-        config = self.config[mode]
+        config = fixtures.config[mode]
         p1 = config["p1"]
         p2 = config["p2"]
         history = []
-        if mode == "react":
-            history = [
-                (
-                    "a red button that says stop",
-                    "<button style={{color: 'white', backgroundColor: 'red'}}>Stop</button>",
-                ),
-                (
-                    "a blue box that contains 3 yellow circles with red borders",
-                    "<div style={{backgroundColor: 'blue', padding: 20}}><div style={{backgroundColor: 'yellow', border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div><div style={{backgroundColor: 'yellow', borderWidth: 1, border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div><div style={{backgroundColor: 'yellow', borderWidth: 1, border: '5px solid red', borderRadius: '50%', padding: 20, width: 100, height: 100}}></div></div>",
-                ),
-            ]
-        elif mode == "chat":
+        if mode == fixtures.react:
+            history = fixtures.react_history
+        elif mode == fixtures.chat:
             if guild_id not in self.history:
-                self._update_history(
-                    guild_id,
-                    "Hello, who are you?",
-                    "I am an AI created by OpenAI. How can I help you today?",
-                )
+                opener, response = fixtures.initial_chat_exchange
+                self._update_history(guild_id, opener, response)
             history = self.history[guild_id]
 
         prompt = "" if "starter" not in config else config["starter"] + "\n"
@@ -126,6 +100,7 @@ class DiscordBot(commands.Bot):
 
     def _init_slash_commands(self):
         cmd = SlashCommand(self, sync_commands=True)
+        # TODO: Remove guild whitelisting.
         guild_ids = [326580881965842433]
        
         @cmd.slash(
@@ -134,24 +109,7 @@ class DiscordBot(commands.Bot):
             guild_ids=guild_ids,
         )
         async def _help(ctx):
-            await ctx.send(
-                dedent(
-                    f"""
-                    Hello! :wave: I'm Big Bob, your virtual friend powered by GPT-3! To get started, send a message in this server and see how I respond.
-
-                    I also support several commands that you can invoke:
-
-                    :robot: `/about`: Displays general information about me.
-                    :question: `/help`: Displays this message.
-                    :traffic_light: `/status`: Checks my latency and interaction mode.
-                    :bar_chart: `/metrics`: Lists global statistics about me.
-                    :currency_exchange: `/switch`: Changes my interaction mode. I can have a conversation, generate React code, or stay silent.
-                    :steam_locomotive: `/engines`: Lists available GPT-3 engines. (Not recommended.)
-                    :tickets: `/complete`: Sends raw input to GPT-3 for completion. (Not recommended.)
-                    :knife: `/amongus`: Displays the selected map for the game _Among Us_. This has nothing to do with AI, but it's still useful...
-                    """
-                ).strip()
-            )
+            await ctx.send(fixtures.help_message)
 
         @cmd.slash(
             name="about",
@@ -159,14 +117,7 @@ class DiscordBot(commands.Bot):
             guild_ids=guild_ids,
         )
         async def _about(ctx):
-            await ctx.send(
-                # TODO: Add links and whatnot
-                dedent(
-                    f"""
-                    Hello! :wave: I'm Big Bob, your virtual friend powered by GPT-3! To get started, send a message in this server and see how I respond.
-                    """
-                ).strip()
-            )
+            await ctx.send(fixtures.introduction)
 
         @cmd.slash(
             name="metrics",
@@ -206,15 +157,15 @@ class DiscordBot(commands.Bot):
                     choices=[
                         create_choice(
                             name="Conversation Mode",
-                            value="chat",
+                            value=fixtures.chat,
                         ),
                         create_choice(
                             name="React Code Generator",
-                            value="react",
+                            value=fixtures.react,
                         ),
                         create_choice(
                             name="Silence the bot for now",
-                            value="silence",
+                            value=fixtures.silence,
                         ),
                     ],
                 ),
@@ -222,12 +173,7 @@ class DiscordBot(commands.Bot):
         )
         async def _switch(ctx, mode: str):
             db.switch_mode(ctx.guild.id, mode)
-            replies = {
-                "chat": "I'm in chat mode. Say something and we can have an AI-powered conversation.",
-                "react": "I will now generate code. Describe a UI you'd like to see, and I'll generate the React code!",
-                "silence": "I'm in silent mode now. I won't answer messages on this server unless otherwise configured.",
-            }
-            await ctx.send(replies[mode])
+            await ctx.send(fixtures.switch_replies[mode])
     
         @cmd.slash(
             name="engines",
@@ -276,19 +222,19 @@ class DiscordBot(commands.Bot):
                     choices=[
                         create_choice(
                             name="The Skeld",
-                            value="https://media.discordapp.net/attachments/757358510911520879/757415061663907870/skeldmapguidev2.png",
+                            value=fixtures.skeld_url,
                         ),
                         create_choice(
                             name="MIRA HQ",
-                            value="https://i.redd.it/8i1kd1mp9ij51.png",
+                            value=fixtures.mira_url,
                         ),
                         create_choice(
                             name="Polus",
-                            value="https://cdn.discordapp.com/attachments/757358510911520879/792121876192690176/polus.jpg",
+                            value=fixtures.polus_url,
                         ),
                         create_choice(
                             name="The Airship",
-                            value="https://imgur.com/4gQUZn8",
+                            value=fixtures.airship_url,
                         ),
                     ],
                 ),

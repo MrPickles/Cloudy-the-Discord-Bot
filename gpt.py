@@ -9,7 +9,10 @@ import db
 logger = logging.getLogger(__name__)
 
 
+# This file contains wrappers for all OpenAI API calls.
+
 def engines() -> List[str]:
+    """Fetches all available engines for GPT-3."""
     try:
         res = openai.Engine.list()
         logger.info(res)
@@ -24,6 +27,7 @@ def complete(
     stop_tokens: List[str] = None,
     max_tokens=150,
 ) -> str:
+    """Uses GPT-3 to complete the provided prompt."""
     try:
         stop = stop_tokens + ["\n"] if stop_tokens is not None else ["\n"]
         res = openai.Completion.create(
