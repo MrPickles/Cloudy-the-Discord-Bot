@@ -7,10 +7,7 @@ from discord_slash import SlashCommand
 from discord_slash.utils.manage_commands import create_option, create_choice
 from openai.error import OpenAIError
 
-import db
-import fixtures
-import gpt
-import locks
+from util import db, fixtures, gpt, locks
 
 
 logger = logging.getLogger(__name__)

@@ -4,7 +4,7 @@ from typing import List
 import openai
 from openai.error import OpenAIError
 
-import db
+from util import db
 
 logger = logging.getLogger(__name__)
 

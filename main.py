@@ -5,7 +5,7 @@ import logging
 import openai
 
 from bot import Cloudy
-import fixtures
+from util import fixtures
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

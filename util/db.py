@@ -2,7 +2,7 @@ import logging
 from datetime import datetime
 from replit import db
 
-import fixtures
+from util import fixtures
 
 logger = logging.getLogger(__name__)
 
