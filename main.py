@@ -1,6 +1,6 @@
+import logging
 import os
 import sys
-import logging
 
 import openai
 
@@ -29,6 +29,7 @@ def main():
     openai.api_key = os.getenv("OPENAI_API_KEY")
     if openai.api_key is None:
         logger.warning("Missing OpenAI API key! Bot actions that depend on GPT-3 may not work properly.")
+        print("Note: Cloudy did not receive an OpenAPI API key. The bot will still run, but expect degraded performance.")
 
     # Instantiate and run the bot.
     bot = Cloudy(command_prefix="!")

@@ -1,19 +1,24 @@
 # Cloudy - The Hacker's Assistant
 
-Cloudy is a friendly Discord bot, designed to help a Discord server full of hackers of all interests.
-Cloudy has various talents depending on the situation:
+Cloudy is a friendly Discord bot, designed to help out Discord servers full of
+indie hackers. Cloudy has various talents depending on the situation:
 
-* AI-powered chat if you're lonely or need someone to bounce ideas off of.
-* Generates react code from your description to help with coding
-* Shows you the map in Among Us when you're feeling social and want to have some recreation.
+* **Lonely or looking to share ideas?** You can chat with Cloudy! Cloudy's AI is
+  backed by [GPT-3][gpt], and he will retain memory of your conversation. (You
+  may be pleasantly surprised by Cloudy's intelligence level!)
+* **Don't want to code?** All you need to do is describe the UI you'd like to
+  build. Cloudy will do the heavy lifting and generate the React component for you.
+* **Feeling social?** Grab some friends and play [Among Us][]! Cloudy will fetch
+  the maps for you. You'll never get lost or stabbed again!
 
-Invite him to your server with [this link][1].
+### Try out the live bot by visiting [this link][invite link].
+
 
 _Imagine a demo video link here_
 
-* also link to GH
-* link to REPLIT
-* link to my twitter or something
+* also link to GH: https://github.com/MrPickles/Cloudy-the-Discord-Bot
+* link to REPLIT: https://replit.com/@liuandrewk/Cloudy-The-Hackers-Assistant
+* link to my twitter or something: https://twitter.com/liuandrewk
 
 ## User Guide & Features
 
@@ -55,6 +60,7 @@ Below are some features of what Cloudy can do.
 * get the token and set it as your env
 * get an openAI API key (optional)
 * run the bot
+* turn on `Always On` instead of doing that keep_alive bs
 
 ## how to operate GPT-3 under the hood
 
@@ -63,4 +69,6 @@ Below are some features of what Cloudy can do.
 * for slash commands, we use an extension library
 
 
-[1]: https://discord.com/oauth2/authorize?client_id=847843661973684224&permissions=18496&scope=bot%20applications.commands
+[invite link]: https://discord.com/oauth2/authorize?client_id=847843661973684224&permissions=18496&scope=bot%20applications.commands
+[Among Us]: https://en.wikipedia.org/wiki/Among_Us
+[gpt]: https://openai.com/blog/gpt-3-apps/

@@ -2,6 +2,7 @@ import logging
 from collections import defaultdict
 from textwrap import dedent
 
+import openai
 from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_slash.utils.manage_commands import create_option, create_choice
@@ -13,11 +14,11 @@ from util import db, fixtures, gpt, locks
 logger = logging.getLogger(__name__)
 
 class Cloudy(commands.Bot):
-    """The base class for Cloud the Discord Bot.
+    """The base class for Cloudy the Discord Bot.
     
-    Cloudy's implementation includes standard handlers for messaging and
-    server-joining events. Additionally, it will initialize several slash
-    commands upon instantiation.
+    Cloudy's implementation includes handlers for messaging and standard
+    Discord events. Additionally, it will initialize several slash commands
+    upon instantiation.
 
     For details about the specific functionality, please refer to the README.
     """
@@ -35,10 +36,10 @@ class Cloudy(commands.Bot):
     async def on_guild_join(self, guild):
         """Handler for when the bot joins a Discord server."""
         logger.info("Joined guild: %d", guild.id)
+        db.increment_guild_count()
         for channel in guild.text_channels:
             if channel.name == "general":
                 await channel.send(fixtures.introduction)
-        db.increment_guild_count()
 
     async def on_message(self, message):
         """Handler for when the bot receives a message."""
@@ -50,7 +51,12 @@ class Cloudy(commands.Bot):
             return
 
         guild_id = message.guild.id
+        # If there's no OpenAI API key, don't enable chat features.
+        if openai.api_key is None:
+            db.switch_mode(guild_id, fixtures.silence)
         mode = db.get_mode(guild_id)
+
+        # Don't say anything when silenced.
         if mode == fixtures.silence:
             logger.debug("Bot is in silence mode. Skipping interaction in guild %d", guild_id)
             return
@@ -58,10 +64,13 @@ class Cloudy(commands.Bot):
         if not self.lock.claim_lock(guild_id):
             logger.info("Guild %d currently holds a lock; ignoring new messages...", guild_id)
             return
+
+        # Generate the parameters for GPT-3 completion.
         prompt = self._build_prompt(guild_id, message.content)
         config = fixtures.config[mode]
         try:
             response = gpt.complete(prompt, [config["p1"], config["p2"]])
+            # Post-process the bot response before sending.
             if mode == fixtures.chat:
                 self._update_history(guild_id, message.content, response)
             elif mode == fixtures.react:
@@ -93,6 +102,8 @@ class Cloudy(commands.Bot):
         config = fixtures.config[mode]
         p1 = config["p1"]
         p2 = config["p2"]
+
+        # Fetch the proper chat history from memory.
         history = []
         if mode == fixtures.react:
             history = fixtures.react_history
@@ -102,6 +113,7 @@ class Cloudy(commands.Bot):
                 self._update_history(guild_id, opener, response)
             history = self.history[guild_id]
 
+        # Construct the final prompt.
         prompt = "" if "starter" not in config else config["starter"] + "\n"
         for (opener, response) in history:
             prompt = prompt + dedent(

@@ -53,7 +53,7 @@ help_message = dedent(
     :currency_exchange: `/switch`: Changes my interaction mode. I can have a conversation, generate React code, or stay silent.
     :steam_locomotive: `/engines`: Lists available GPT-3 engines. (Not recommended.)
     :tickets: `/complete`: Sends raw input to GPT-3 for completion. (Not recommended.)
-    :knife: `/amongus`: Displays the selected map for the game _Among Us_. This has nothing to do with AI, but it's still useful...
+    :knife: `/amongus`: Displays the selected map for the game _Among Us_.
     """
 ).strip()
 
