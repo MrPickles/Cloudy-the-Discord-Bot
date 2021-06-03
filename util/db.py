@@ -53,16 +53,19 @@ def get_guild_count() -> int:
 
 
 def _mode_key(guild_id: int) -> str:
+    """Returns the formatted key representing a server's interaction mode."""
     return f"mode/{guild_id}"
 
 
 def _increment_counter(metric: str):
+    """Increments the value counter for an arbitrary key."""
     if metric not in db:
         db[metric] = 0
     db[metric] += 1
 
 
 def _get_counter(metric: str) -> int:
+    """Fetches the value counter for an arbitrary key."""
     if metric not in db:
         db[metric] = 0
     return db[metric]

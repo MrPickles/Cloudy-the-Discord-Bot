@@ -11,10 +11,10 @@ class Lock():
     we can make API calls claim a keyed lock per server, such that one single
     server cannot spam API calls.
     """
-    def __init__(self):
+    def __init__(self, lock_lifespan_seconds: int = 300):
         self.lock = {}
         # In case of error, we don't want stray locks to live forever.
-        self.lock_lifespan_seconds = 300
+        self.lock_lifespan_seconds = lock_lifespan_seconds
 
     def claim_lock(self, key: int) -> bool:
         """Claims a lock on a given key. Returns whether the claim succeeded."""
@@ -31,6 +31,7 @@ class Lock():
         logger.info("Released lock on %d", key)
 
     def _is_locked(self, key: int) -> bool:
+        """Checks if there's a claimed lock on a key."""
         if key not in self.lock:
             return False
         diff = datetime.now() - self.lock[key]

@@ -16,6 +16,9 @@ mira_url = "https://i.redd.it/8i1kd1mp9ij51.png"
 polus_url = "https://cdn.discordapp.com/attachments/757358510911520879/792121876192690176/polus.jpg"
 airship_url = "https://imgur.com/4gQUZn8"
 
+# The maximum amount of "memory" the bot will have for a given server's conversation.
+max_history_length = 10
+
 # GPT-3 configuration values depending on bot mode.
 config = {
     chat: {

@@ -13,6 +13,14 @@ from util import db, fixtures, gpt, locks
 logger = logging.getLogger(__name__)
 
 class Cloudy(commands.Bot):
+    """The base class for Cloud the Discord Bot.
+    
+    Cloudy's implementation includes standard handlers for messaging and
+    server-joining events. Additionally, it will initialize several slash
+    commands upon instantiation.
+
+    For details about the specific functionality, please refer to the README.
+    """
     def __init__(self, *args, **kwargs):
         super(Cloudy, self).__init__(*args, **kwargs)
         self.history = defaultdict(list)
@@ -20,10 +28,12 @@ class Cloudy(commands.Bot):
         self._init_slash_commands()
    
     async def on_ready(self):
+        """Handler for when the bot has become interactive."""
         logger.info("We have logged in as %s", self.user)
         db.set_last_init()
 
     async def on_guild_join(self, guild):
+        """Handler for when the bot joins a Discord server."""
         logger.info("Joined guild: %d", guild.id)
         for channel in guild.text_channels:
             if channel.name == "general":
@@ -31,6 +41,7 @@ class Cloudy(commands.Bot):
         db.increment_guild_count()
 
     async def on_message(self, message):
+        """Handler for when the bot receives a message."""
         if message.author == self.user:
             return
 
@@ -62,11 +73,22 @@ class Cloudy(commands.Bot):
         self.lock.release_lock(guild_id)
 
     def _update_history(self, guild_id: int, opener: str, response: str):
+        """Updates the AI chat history for a given server.
+
+        For now, the maximum history length is 10. This is to prevent too much
+        of a memory overhead per server.
+        """
         self.history[guild_id].append((opener, response))
-        if len(self.history[guild_id]) > 10:
+        if len(self.history[guild_id]) > fixtures.max_history_length:
             self.history[guild_id].pop(0)
 
     def _build_prompt(self, guild_id: int, msg: str) -> str:
+        """Constructs a conversational template to feed into GPT-3.
+
+        The actual template itself depends on the bot's interaction mode and
+        prior chat history. We need something to work off of in order for GPT-3
+        to create a reasonable output.
+        """
         mode = db.get_mode(guild_id)
         config = fixtures.config[mode]
         p1 = config["p1"]
@@ -96,6 +118,7 @@ class Cloudy(commands.Bot):
         ).rstrip()
 
     def _init_slash_commands(self):
+        """Initializes all slash commands for this bot."""
         cmd = SlashCommand(self, sync_commands=True)
         # TODO: Remove guild whitelisting.
         guild_ids = [326580881965842433]
@@ -106,6 +129,7 @@ class Cloudy(commands.Bot):
             guild_ids=guild_ids,
         )
         async def _help(ctx):
+            """Displays the help message for this bot."""
             await ctx.send(fixtures.help_message)
 
         @cmd.slash(
@@ -114,6 +138,7 @@ class Cloudy(commands.Bot):
             guild_ids=guild_ids,
         )
         async def _about(ctx):
+            """Displays the introductory message for this bot."""
             await ctx.send(fixtures.introduction)
 
         @cmd.slash(
@@ -122,6 +147,7 @@ class Cloudy(commands.Bot):
             guild_ids=guild_ids,
         )
         async def _metrics(ctx):
+            """Displays global statistics about this bot."""
             await ctx.send(
                 dedent(
                     f"""
@@ -137,6 +163,7 @@ class Cloudy(commands.Bot):
             guild_ids=guild_ids,
         )
         async def _status(ctx):
+            """Displays the bot's interaction mode and latency."""
             latency = round(self.latency * 1000, 3)
             mode = db.get_mode(ctx.guild.id)
             await ctx.send(f"I received your ping in {latency} ms. I'm currently in `{mode}` mode.")
@@ -169,6 +196,7 @@ class Cloudy(commands.Bot):
             ],
         )
         async def _switch(ctx, mode: str):
+            """Changes the bot's interaction mode to the user's input choice."""
             db.switch_mode(ctx.guild.id, mode)
             await ctx.send(fixtures.switch_replies[mode])
     
@@ -178,6 +206,11 @@ class Cloudy(commands.Bot):
             guild_ids=guild_ids,
         )
         async def _engines(ctx):
+            """Lists the available GPT-3 engines.
+
+            This command was intended for developers and will not be helpful or
+            interesting to users.
+            """
             try:
                 engines = gpt.engines()
                 msg = "The following GPT-3 engines are available:\n"
@@ -200,6 +233,11 @@ class Cloudy(commands.Bot):
             ],
         )
         async def _complete(ctx, prompt: str):
+            """Feeds user-specified raw input into GPT-3.
+
+            This command was intended for developers and will not be helpful or
+            interesting to users.
+            """
             try:
                 res = gpt.complete(prompt, max_tokens=50)
                 await ctx.send(f"**{prompt[1:-1]}** {res}")
@@ -238,5 +276,6 @@ class Cloudy(commands.Bot):
             ],
         )
         async def _amongus(ctx, map_url: str):
+            """Displays a map from Among Us, depending on user selection."""
             await ctx.send(map_url)
  

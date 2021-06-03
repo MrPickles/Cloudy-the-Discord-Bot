@@ -25,7 +25,7 @@ def engines() -> List[str]:
 def complete(
     prompt: str,
     stop_tokens: List[str] = None,
-    max_tokens=150,
+    max_tokens: int = 150,
 ) -> str:
     """Uses GPT-3 to complete the provided prompt."""
     try:

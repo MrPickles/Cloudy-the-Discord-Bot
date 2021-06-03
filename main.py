@@ -12,6 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 def main():
+    print("Welcome! You are running Cloudy, the Discord bot! ☁️ 🤖")
+
     # Fetch the Discord bot token.
     token = os.getenv("TOKEN")
     if token is None:
