@@ -160,14 +160,6 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 category = "main"
-description = "module for enabling file locks"
-name = "lock"
-optional = false
-python-versions = "*"
-version = "2018.3.25.2110"
-
-[[package]]
-category = "main"
 description = "Safely add untrusted strings to HTML/XML markup."
 name = "markupsafe"
 optional = false
@@ -292,7 +284,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "7e6f9884ebbd9a7b3b5f6e578f72bde88380e62462485dfc7f51ebe4ddd2454e"
+content-hash = "01843fe8c8f67bd2999bc8b7ca5af3bef34371ad6ed5161e80b46cc6a34f7783"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -386,9 +378,6 @@ itsdangerous = [
 jinja2 = [
     {file = "Jinja2-3.0.1-py3-none-any.whl", hash = "sha256:1f06f2da51e7b56b8f238affdd6b4e2c61e39598a378cc49345bc1bd42a978a4"},
     {file = "Jinja2-3.0.1.tar.gz", hash = "sha256:703f484b47a6af502e743c9122595cc812b0271f661722403114f71a79d0f5a4"},
-]
-lock = [
-    {file = "lock-2018.3.25.2110.tar.gz", hash = "sha256:cc5ac770930493eed7a8cfd0cf2568a125faf112eb8aa6b6149b3e581523d0c7"},
 ]
 markupsafe = [
     {file = "MarkupSafe-2.0.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:f9081981fe268bd86831e5c75f7de206ef275defcb82bc70740ae6dc507aee51"},

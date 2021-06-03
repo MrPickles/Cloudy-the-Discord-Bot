@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from textwrap import dedent
 
 import openai
 
@@ -18,10 +19,19 @@ def main():
     token = os.getenv("TOKEN")
     if token is None:
         logger.error("Missing bot token!")
-        print("Please provide a token to run the bot. See the README for more details.\n")
-        print("- If you're running this as a REPL, fork this repository and set the $TOKEN environment variable.\n")
-        print(f"- If you'd like to try out the live bot, invite Cloudy to your Discord server via the following link: {fixtures.auth_url}\n")
-        print("- If you're just browsing, check out the README for a demo. ;)\n")
+        print(
+            dedent(
+                f"""
+                Please provide a token to run the bot. See the README for more details.
+    
+                - If you're running this as a REPL, fork this repository and set the $TOKEN environment variable.
+    
+                - If you'd like to try out the live bot, invite Cloudy to your Discord server via the following link: {fixtures.auth_url}
+    
+                - If you're just browsing, check out the README for a demo. ;)
+                """
+            )
+        )
         sys.exit(1)
 
     # Load the OpenAI API key.

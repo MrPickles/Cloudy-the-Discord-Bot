@@ -24,7 +24,7 @@ config = {
     chat: {
         "p1": "Human:",
         "p2": "AI:",
-        "starter": "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly.",
+        "starter": "The following is a conversation with an AI assistant. The assistant's name is Cloudy. The assistant is helpful, creative, clever, and very friendly.",
     },
     react: {
         "p1": "description:",
@@ -85,4 +85,4 @@ react_history = [
 ]
 
 # Default messaging history when doing AI-based conversational chat.
-initial_chat_exchange = ("Hello, who are you?", "I am an AI created by OpenAI. How can I help you today?")
+initial_chat_exchange = ("Hello, who are you?", "My name is Cloudy. I am an AI created by Andrew Liu. How can I help you today?")
