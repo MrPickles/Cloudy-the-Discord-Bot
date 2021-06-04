@@ -16,6 +16,11 @@ def set_last_init():
     logger.info("Last initialization time set as: %s", last_init)
 
 
+def get_last_init() -> str:
+    """Fetches the timestamp when the bot was last instantiated."""
+    return db["last_init"]
+
+
 def switch_mode(guild_id: int, mode: str):
     """Changes the bot's behavior mode for a given Discord server."""
     key = _mode_key(guild_id)
@@ -50,6 +55,16 @@ def increment_guild_count():
 def get_guild_count() -> int:
     """Fetches the number of times the bot has joined a new Discord server."""
     return _get_counter("guilds_joined")
+
+
+def increment_etherscan_calls():
+    """Increments the number of times the bot has called the Etherscan API."""
+    _increment_counter("etherscan_calls")
+
+
+def get_etherscan_calls() -> int:
+    """Fetches the number of times the bot has called the Etherscan API."""
+    return _get_counter("etherscan_calls")
 
 
 def _mode_key(guild_id: int) -> str:

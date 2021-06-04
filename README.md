@@ -12,14 +12,17 @@ indie hackers. Cloudy has various talents depending on the situation:
   build. Cloudy will do the heavy lifting and generate the React component for you.
 * **Feeling social?** Grab some friends and play [Among Us][]! Cloudy will fetch
   the maps for you. You'll never get lost or stabbed again!
+* **Interested in Crypto?** Cloudy will get you real time data on Ethereum. Now
+  you can stop spamming refresh on your Coinbase tab!
 
 ### You can try out the live bot by visiting [this link][invite link].
 
 **Imagine an embedded demo video here...**
 
-_Cloudy was proudly built on [Replit][replit] using the [OpenAI API][] and
-[discord.py][]. You can view the [REPL][repl] or browse the [source code][gh].
-Follow [@liuandrewk][twitter] on Twitter if you have any questions or feedback._
+_Cloudy was proudly built on [Replit][replit] using the [OpenAI API][],
+[Etherscan API][], and [discord.py][]. You can view the [REPL][repl] or browse
+the [source code][gh]. Follow [@liuandrewk][twitter] on Twitter if you have any
+questions or feedback._
 
 ## Getting Started
 
@@ -29,11 +32,12 @@ Getting started is simple. Here's what you do:
 2. Start talking!
 
 That's all you need to do. Additionally, Cloudy will expose several Discord
-commands. We will discuss them in more detail in the next section. Here are a
-_some of them_ to whet your appetite:
+commands. We will discuss all of them in more detail in the next section. As an
+example, here are _some of them_ to whet your appetite:
 
-* `/amongus` can fetch the maps in _Among Us_.
-* `/switch` will allow you to change the bot's interaction mode.
+* `/amongus` fetches the maps in _Among Us_.
+* `/switch` allows you to change the bot's interaction mode.
+* `/eth price` shows the current Ethereum price.
 * `/help` will list out all other commands and a getting started guide.
 
 We will discuss the remaining commands and features next. Onwards!
@@ -99,7 +103,25 @@ Currently there are four maps in the game.
 Please [ping me][twitter] if there's an update and you would like the new map
 added.
 
-### And Extras!
+### Ethereum Utilities
+
+To check up on information related to Ethereum, you can use Cloudy's `/eth`
+command group. The command group exposes two subcommands:
+
+* `/eth price` checks the current Ethereum price.
+* `/eth balance <wallet>` checks an Ethereum wallet's balance.
+
+The `price` subcommand takes no arguments and gets the current price of Ethereum
+in USD. Since its price can fluctuate, we also include the last time that this
+price was checked.
+
+The `balance` subcommand takes in an Ethereum wallet address and checks the
+amount of Ether within the wallet. It also converts the Ether to its current
+value in USD.
+
+![Gif demonstrating the Eth command](images/eth.gif)
+
+### And More!
 
 There are several more commands to help you leverage Cloudy. You can view them
 all using the `/help` command.
@@ -111,13 +133,15 @@ I can provide additional context for some of these commands:
 * `/switch` changes Cloudy's interaction mode. It takes in one parameter, which
   is the desired mode. The mode can either be for conversational AI, code
   generation, or silent mode. Like with other commands, there's autocompletion.
-* `/status` will show Cloudy's latency and current interaction mode. This is a
-  great way to debug Cloudy in case of unusual behavior.
+* `/status` will show Cloudy's state, which includes details like latency,
+  current interaction mode, and build time. This is a great way to debug Cloudy
+  in case of unusual behavior.
 * `/metrics` fetches global stats about Cloudy. These include number of Discord
-  servers joined and number of GPT-3 completions generated.
+  servers joined, number of GPT-3 completions generated, and number of Etherscan
+  API calls made.
 * `/engines` lists out the available GPT-3 engines. This is mainly for debugging
   purposes. (However, it _can_ check whether Cloudy can connect to OpenAI.)
-* `/complete` feeds in raw input for GPT-3 completion. It takes in a single
+* `/complete <prompt>` feeds in raw input for GPT-3 completion. It takes in a single
   parameter, which is the raw input text. This is also mainly for debugging
   purposes, though it might be cool to see how things work behind the scenes.
 
@@ -178,9 +202,9 @@ You have many options with GPT-3 if you're creative with the input it receives.
 ### Slash commands
 
 Most chat bot features occur as a result of normal conversations happening
-within a Discord server. However, Cloudy also supports slash commands. We use an
-[extension library][discord-py-slash-command] to support those commands. As a
-result, it gives us benefits such as fuzzy autocompletion and enumerated
+within a Discord server. However, Cloudy also supports [slash commands]. We use
+an [extension library][discord-py-slash-command] to support those commands. As
+a result, it gives us benefits such as fuzzy autocompletion and enumerated
 arguments. Any non-chat commands you add should be a slash command.
 
 ---
@@ -194,6 +218,7 @@ questions, comments, or feedback. I'd love to hear from you._
 [gpt]: https://openai.com/blog/gpt-3-apps/
 [replit]: https://replit.com/
 [OpenAI API]: https://beta.openai.com/
+[Etherscan API]: https://etherscan.io/apis
 [discord.py]: https://discordpy.readthedocs.io/en/stable/
 [gh]: https://github.com/MrPickles/Cloudy-the-Discord-Bot
 [repl]: https://replit.com/@liuandrewk/Cloudy-The-Hackers-Assistant
@@ -201,3 +226,4 @@ questions, comments, or feedback. I'd love to hear from you._
 [replit db]: https://docs.replit.com/misc/database
 [app docs]: https://discordpy.readthedocs.io/en/stable/discord.html#discord-intro
 [discord-py-slash-command]: https://discord-py-slash-command.readthedocs.io/en/latest/index.html
+[slash commands]: https://www.youtube.com/watch?v=4XxcpBxSCiU

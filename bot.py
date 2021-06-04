@@ -8,7 +8,7 @@ from discord_slash import SlashCommand
 from discord_slash.utils.manage_commands import create_option, create_choice
 from openai.error import OpenAIError
 
-from util import db, fixtures, gpt, locks
+from util import db, eth, fixtures, gpt, locks
 
 
 logger = logging.getLogger(__name__)
@@ -22,10 +22,11 @@ class Cloudy(commands.Bot):
 
     For details about the specific functionality, please refer to the README.
     """
-    def __init__(self, *args, **kwargs):
-        super(Cloudy, self).__init__(*args, **kwargs)
+    def __init__(self, etherscan_api_key=None, *args, **kwargs):
+        super(Cloudy, self).__init__(command_prefix="/", *args, **kwargs)
         self.history = defaultdict(list)
         self.lock = locks.Lock()
+        self.etherscan_api_key = etherscan_api_key
         self._init_slash_commands()
    
     async def on_ready(self):
@@ -165,6 +166,7 @@ class Cloudy(commands.Bot):
                     f"""
                     GPT-3 completions generated: {db.get_gpt_completions()}
                     Discord servers joined: {db.get_guild_count()}
+                    Etherscan API calls made: {db.get_etherscan_calls()}
                     """
                 ).strip()
             )
@@ -177,8 +179,22 @@ class Cloudy(commands.Bot):
         async def _status(ctx):
             """Displays the bot's interaction mode and latency."""
             latency = round(self.latency * 1000, 3)
+            timestamp = db.get_last_init()
             mode = db.get_mode(ctx.guild.id)
-            await ctx.send(f"I received your ping in {latency} ms. I'm currently in `{mode}` mode.")
+            statuses = [
+                f"- I received your ping in {latency} ms.",
+                f"- My current build was initialized on {timestamp} UTC.",
+                f"- Right now I'm in `{mode}` mode.",
+            ]
+            if openai.api_key is not None:
+                statuses.append("- I have an OpenAI API key. ✅")
+            else:
+                statuses.append("- I am missing an OpenAI API key. ❌")
+            if self.etherscan_api_key is not None:
+                statuses.append("- I have an Etherscan API key. ✅")
+            else:
+                statuses.append("- I am missing an Etherscan API key. ❌")
+            await ctx.send("\n".join(statuses))
 
         @cmd.slash(
             name="switch",
@@ -292,4 +308,58 @@ class Cloudy(commands.Bot):
         async def _amongus(ctx, map_url: str):
             """Displays a map from Among Us, depending on user selection."""
             await ctx.send(map_url)
- 
+  
+        @cmd.subcommand(
+            base="eth",
+            name="price",
+            description="Fetches the current price of Ethereum in USD.",
+            guild_ids=guild_ids,
+        )
+        async def _price(ctx):
+            await ctx.defer()
+            if self.etherscan_api_key is None:
+                await ctx.send(fixtures.missing_etherscan_api_key_msg)
+                return
+            try:
+                price_data = eth.price(self.etherscan_api_key)
+                if "error" in price_data:
+                    await ctx.send(price_data["error"])
+                    return
+                price = round(price_data["ethusd"], 2)
+                timestamp = price_data["timestamp"].strftime("%B %-m, %Y %H:%M UTC")
+                await ctx.send(f"The price of 1 Ether is ${price} USD as of {timestamp}.")
+            except Exception as e:
+                logger.warning(e)
+                await ctx.send(fixtures.generic_error_message)
+
+        @cmd.subcommand(
+            base="eth",
+            name="balance",
+            description="Fetches the balance of an Ethereum and its value in USD.",
+            guild_ids=guild_ids,
+            options=[
+                create_option(
+                    name="wallet",
+                    description="The Ethereum wallet address.",
+                    option_type=3,
+                    required=True,
+                ),
+            ],
+        )
+        async def _balance(ctx, wallet: str):
+            await ctx.defer()
+            if self.etherscan_api_key is None:
+                await ctx.send(fixtures.missing_etherscan_api_key_msg)
+                return
+            try:
+                balance_data = eth.balance(self.etherscan_api_key, wallet)
+                if "error" in balance_data:
+                    await ctx.send(f"{balance_data['error']} - `{wallet}`")
+                    return
+                timestamp = balance_data["timestamp"].strftime("%B %-m, %Y %H:%M UTC")
+                ether = balance_data["ether"]
+                usd = round(balance_data["usd"], 2)
+                await ctx.send(f"As of {timestamp}, the wallet `{wallet}` has {ether} ETH, or ${usd} USD.")
+            except Exception as e:
+                logger.warning(e)
+                await ctx.send(fixtures.generic_error_message)

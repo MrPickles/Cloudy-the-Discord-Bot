@@ -54,6 +54,7 @@ help_message = dedent(
     :steam_locomotive: `/engines`: Lists available GPT-3 engines. (Not recommended.)
     :tickets: `/complete`: Sends raw input to GPT-3 for completion. (Not recommended.)
     :knife: `/amongus`: Displays the selected map for the game _Among Us_.
+    :coin: `/eth`: Executes various subcommands related to Ethereum.
     """
 ).strip()
 
@@ -86,3 +87,9 @@ react_history = [
 
 # Default messaging history when doing AI-based conversational chat.
 initial_chat_exchange = ("Hello, who are you?", "My name is Cloudy. I am an AI created by Andrew Liu. How can I help you today?")
+
+# A generic error message to show during failed commands.
+generic_error_message = "Oops! Cloudy ran into an unknown error while handling your command."
+
+# The message show show for if Cloudy is missing an Etherscan API key.
+missing_etherscan_api_key_msg = "Sorry! I'm missing an Etherscan API key, so I can't help you right now. Please try again later."
