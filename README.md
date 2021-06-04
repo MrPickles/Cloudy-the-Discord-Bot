@@ -1,5 +1,7 @@
 # Cloudy - The Hacker's Assistant
 
+![](images/cloudy.png)
+
 Cloudy is a friendly Discord bot, designed to help out Discord servers full of
 indie hackers. Cloudy has various talents depending on the situation:
 
@@ -91,23 +93,41 @@ In this section we'll go over the steps to run your own instance of Cloudy.
 1. (optional) Visit the [OpenAI API][] website can claim an API key. You may be
    subjected to a waitlist, so this step is optional. However, expect the bot to
    have degraded performance without the API key.
-1. Set the bot token and OpenAI API key in your Replit environment.
+1. Set the bot token and OpenAI API key in your Replit environment. Set them as
+   `TOKEN` and `OPENAI_API_KEY`, respectively.
 
-   ![Screenshot showing where to load environment variables](images/variables.png)
+   ![Screenshot showing where to load secrets](images/variables.png)
 
-1. Run the bot. Be sure to enable the `Always On` feature in your REPL so your
-   bot won't shut down after inactivity.
+1. Run the code. Be sure to enable the `Always On` feature in your REPL so your
+   bot won't shut down after periods of inactivity.
 
-   ![Screenshot showing where to toggle the Always On feature](images/alwayson.png)
+   ![Screenshot showing where to toggle Always On](images/alwayson.png)
 
-1. Add the running bot to your Discord server via your OAuth2 invitation link.
+1. Add the your bot to your Discord server via your OAuth2 invitation link.
 
-### how to operate GPT-3 under the hood
+### Operating GPT-3 from the Application Layer
 
-* create a "warmup" history to "train" the bot
-* if you have memory, append to the history
-* for slash commands, we use an extension library
+At its core, GPT-3 is a text completion engine. It is up to the developer to
+"train" it with "warmup" text so its output will be something desireable. Thus
+you might notice that a fair amount of Cloudy's internal logic revolves around
+keeping a history of chat interactions. It will feed previous interactions to
+GPT-3 in order to infer the next response.
 
+You have many options with GPT-3 if you're creative with the input it receives.
+
+### Slash commands
+
+Most chat bot features occur as a result of normal conversations happening
+within a Discord server. However, Cloudy also supports slash commands. We use an
+[extension library][discord-py-slash-command] to support those commands. As a
+result, it gives us benefits such as fuzzy autocompletion and enumerated
+arguments. Any non-chat commands you add should be a slash command.
+
+---
+
+_Thanks for reading! Once again, you can try out Cloudy by visiting
+[this link][invite link]. Please reach out to [@liuandrewk][twitter] with
+questions and feedback._
 
 [invite link]: https://discord.com/oauth2/authorize?client_id=847843661973684224&permissions=18496&scope=bot%20applications.commands
 [Among Us]: https://en.wikipedia.org/wiki/Among_Us
@@ -120,3 +140,4 @@ In this section we'll go over the steps to run your own instance of Cloudy.
 [twitter]: https://twitter.com/liuandrewk
 [replit db]: https://docs.replit.com/misc/database
 [app docs]: https://discordpy.readthedocs.io/en/stable/discord.html#discord-intro
+[discord-py-slash-command]: https://discord-py-slash-command.readthedocs.io/en/latest/index.html
