@@ -11,7 +11,7 @@ class Lock():
     we can make API calls claim a keyed lock per server, such that one single
     server cannot spam API calls.
     """
-    def __init__(self, lock_lifespan_seconds: int = 300):
+    def __init__(self, lock_lifespan_seconds: int = 30):
         self.lock = {}
         # In case of error, we don't want stray locks to live forever.
         self.lock_lifespan_seconds = lock_lifespan_seconds

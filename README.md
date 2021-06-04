@@ -1,14 +1,13 @@
 # Cloudy - The Hacker's Assistant
 
-![](images/cloudy.png)
+![The Cloudy Logo](images/cloudy.png)
 
 Cloudy is a friendly Discord bot, designed to help out Discord servers full of
 indie hackers. Cloudy has various talents depending on the situation:
 
 * **Lonely or looking to share ideas?** You can chat with Cloudy! He's trained
-  to be both friendly and helpful. He will also remember the conversation.
-  (Cloudy's AI is backed by [GPT-3][gpt], so you may be pleasantly surprised by
-  his intelligence!)
+  to be friendly, helpful, and have good memory. (Cloudy's AI is backed by
+  [GPT-3][gpt], so you may be pleasantly surprised by his intelligence!)
 * **Don't want to code?** All you need to do is describe the UI you'd like to
   build. Cloudy will do the heavy lifting and generate the React component for you.
 * **Feeling social?** Grab some friends and play [Among Us][]! Cloudy will fetch
@@ -16,55 +15,116 @@ indie hackers. Cloudy has various talents depending on the situation:
 
 ### You can try out the live bot by visiting [this link][invite link].
 
-_Imagine an embedded demo video here..._
+**Imagine an embedded demo video here...**
 
 _Cloudy was proudly built on [Replit][replit] using the [OpenAI API][] and
 [discord.py][]. You can view the [REPL][repl] or browse the [source code][gh].
 Follow [@liuandrewk][twitter] on Twitter if you have any questions or feedback._
 
+## Getting Started
+
+Getting started is simple. Here's what you do:
+
+1. [Invite Cloudy][invite link] to your Discord Server.
+2. Start talking!
+
+That's all you need to do. Additionally, Cloudy will expose several Discord
+commands. We will discuss them in more detail in the next section. Here are a
+_some of them_ to whet your appetite:
+
+* `/amongus` can fetch the maps in _Among Us_.
+* `/switch` will allow you to change the bot's interaction mode.
+* `/help` will list out all other commands and a getting started guide.
+
+We will discuss the remaining commands and features next. Onwards!
+
 ## User Guide & Features
 
-Below are some features of what Cloudy can do.
+Cloudy has lots of cool features for Discord users. We will discuss each of them
+in stride.
 
-### Getting Started
+### Conversational AI Chat 
 
-* invite discord bot to your server
-* type stuff
-* use `/switch` to change interaction mode and `/help` for more details
+Cloud has a conversational chat AI powered by [GPT-3][gpt]. It will respond to
+whatever you say in the Discord server and can remember your conversation.
 
-### AI chat
+You can have a surprisingly realistic chat with Cloudy. If you're in a curious
+mood, feel free to throw some questions at Cloudy. The AI has historical
+knowledge, so you should receive factual answers.
 
 ![Screenshot of AI-powered Chatting](images/chat.png)
 
-* it'll use GPT-3 to be a chat bot
-* use `/switch` to use chat mode; though this is the default
-* there is some semblance of memory here
-* it can chat with you or answer questions; the world's your oyster
+By default Cloudy should be in conversational mode. You can always use the
+`/switch` command to toggle between chat modes or silence the bot.
 
-### Code Generator
+Note that Cloudy will not pay attention to new messages while he is thinking
+about a response. This is to prevent chat spamming from users.
+
+### React Code Generation
+
+Aside from normal conversations, you can have Cloudy generate React code by
+describing a UI. To enable this, use the `/switch` command to toggle the bot's
+interaction mode. Now you're all set! Describe a UI in the Discord server, and
+Cloudy should respond with its source code.
 
 ![Screenshot of React Code Generation](images/react.png)
 
-* also uses GPT-3
-* just `/switch` to change it to code mode
-* describe the UI you want and it'll spit out react code
+You _must_ set the interaction mode first, or else Cloudy will have a normal
+conversation. When in doubt, you can always use the `/status` command to get
+Cloudy's current interaction mode.
+
+Note that conversational chat is disabled during code generation mode (and vice
+versa).
 
 ### Among Us Maps
 
+Cloudy exposes the `/amongus` command to fetch maps in _Among Us_. It takes in
+one parameter, which is the map name. You do not have to type in the full map
+name (or memorize the names), as Cloudy knows the maps and will allow you to
+autocomplete the name.
+
+The bot will then render a high-quality image of the chosen map with pointers
+about various details about map. I recommend running this command while you're
+in a lobby of _Among Us_. That way you can have the map up before a game begins.
+
 ![Gif demonstrating the Amongus command](images/amongus.gif)
 
-* this is a slash command `/amongus`
-* you can pick from 4 maps
-* that's about it, but it's remarkably helpful
+Currently there are four maps in the game.
 
-### ...and more!
+* The Skeld
+* MIRA HQ
+* Polus
+* The Airship
+
+Please [ping me][twitter] if there's an update and you would like the new map
+added.
+
+### And Extras!
+
+There are several more commands to help you leverage Cloudy. You can view them
+all using the `/help` command.
 
 ![Screenshot of the help menu](images/help.png)
 
-* use `/about` and `/help` when in doubt
-* `/metrics` for global stats
-* `/switch` to change modes or silence the bot
-* other fun easter eggs
+I can provide additional context for some of these commands:
+
+* `/switch` changes Cloudy's interaction mode. It takes in one parameter, which
+  is the desired mode. The mode can either be for conversational AI, code
+  generation, or silent mode. Like with other commands, there's autocompletion.
+* `/status` will show Cloudy's latency and current interaction mode. This is a
+  great way to debug Cloudy in case of unusual behavior.
+* `/metrics` fetches global stats about Cloudy. These include number of Discord
+  servers joined and number of GPT-3 completions generated.
+* `/engines` lists out the available GPT-3 engines. This is mainly for debugging
+  purposes. (However, it _can_ check whether Cloudy can connect to OpenAI.)
+* `/complete` feeds in raw input for GPT-3 completion. It takes in a single
+  parameter, which is the raw input text. This is also mainly for debugging
+  purposes, though it might be cool to see how things work behind the scenes.
+
+Lastly, I want to you to know that **there are easter eggs hidden throughout the
+bot**. I have not described any of them in this README. This is in order to
+incentize you to check out the [REPL][repl] and interact with the
+[live bot][invite link]. Have fun! 🙊
 
 ## Developer Guide
 
@@ -81,7 +141,7 @@ In this section we'll go over the steps to run your own instance of Cloudy.
    really good, so I recommend following those. Be sure to gather your **bot
    token** and **OAuth2 invitation URL**.
 
-   * Your application will  need the following OAuth2 scopes:
+   * Your application requires the following OAuth2 scopes:
      * `bot`
      * `applications.command`
 
@@ -91,8 +151,8 @@ In this section we'll go over the steps to run your own instance of Cloudy.
      * `Add Reactions`
 
 1. (optional) Visit the [OpenAI API][] website can claim an API key. You may be
-   subjected to a waitlist, so this step is optional. However, expect the bot to
-   have degraded performance without the API key.
+   subjected to a waitlist, so I've made the API a soft dependency. However,
+   expect to have degraded performance without API access.
 1. Set the bot token and OpenAI API key in your Replit environment. Set them as
    `TOKEN` and `OPENAI_API_KEY`, respectively.
 
@@ -127,7 +187,7 @@ arguments. Any non-chat commands you add should be a slash command.
 
 _Thanks for reading! Once again, you can try out Cloudy by visiting
 [this link][invite link]. Please reach out to [@liuandrewk][twitter] with
-questions and feedback._
+questions, comments, or feedback. I'd love to hear from you._
 
 [invite link]: https://discord.com/oauth2/authorize?client_id=847843661973684224&permissions=18496&scope=bot%20applications.commands
 [Among Us]: https://en.wikipedia.org/wiki/Among_Us
