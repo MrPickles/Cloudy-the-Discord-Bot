@@ -49,6 +49,8 @@ Below are some features of what Cloudy can do.
 
 ### Among Us Maps
 
+![](images/amongus.gif)
+
 * this is a slash command `/amongus`
 * you can pick from 4 maps
 * that's about it, but it's remarkably helpful
