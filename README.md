@@ -111,9 +111,9 @@ command group. The command group exposes two subcommands:
 * `/eth price` checks the current Ethereum price.
 * `/eth balance <wallet>` checks an Ethereum wallet's balance.
 
-The `price` subcommand takes no arguments and gets the current price of Ethereum
-in USD. Since its price can fluctuate, we also include the last time that this
-price was checked.
+The `price` subcommand takes no arguments and gets the current value of Ethereum
+and Bitcoin in USD. Since their prices can fluctuate, we also include the last
+time that this price was checked.
 
 The `balance` subcommand takes in an Ethereum wallet address and checks the
 amount of Ether within the wallet. It also converts the Ether to its current

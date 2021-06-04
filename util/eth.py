@@ -62,7 +62,11 @@ def price(api_key: str) -> dict:
         return {
             "error": result,
         }
+    ethusd = float(result["ethusd"])
+    ethbtc = float(result["ethbtc"])
+    btcusd = ethusd / ethbtc
     return {
-        "ethusd": float(result["ethusd"]),
+        "ethusd": ethusd,
+        "btcusd": btcusd,
         "timestamp": datetime.fromtimestamp(int(result["ethusd_timestamp"])),
     }

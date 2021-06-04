@@ -325,9 +325,18 @@ class Cloudy(commands.Bot):
                 if "error" in price_data:
                     await ctx.send(price_data["error"])
                     return
-                price = round(price_data["ethusd"], 2)
+                ethusd = round(price_data["ethusd"], 2)
+                btcusd = round(price_data["btcusd"], 2)
                 timestamp = price_data["timestamp"].strftime("%B %-m, %Y %H:%M UTC")
-                await ctx.send(f"The price of 1 Ether is ${price} USD as of {timestamp}.")
+                await ctx.send(
+                    dedent(
+                        f"""
+                        As of {timestamp}, these are the dollar values of Bitcoin and Ethereum:
+                        1 BTC = ${btcusd} USD
+                        1 ETH = ${ethusd} USD
+                        """
+                    ).strip()
+                )
             except Exception as e:
                 logger.warning(e)
                 await ctx.send(fixtures.generic_error_message)
