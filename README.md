@@ -177,8 +177,14 @@ In this section we'll go over the steps to run your own instance of Cloudy.
 1. (optional) Visit the [OpenAI API][] website can claim an API key. You may be
    subjected to a waitlist, so I've made the API a soft dependency. However,
    expect to have degraded performance without API access.
-1. Set the bot token and OpenAI API key in your Replit environment. Set them as
-   `TOKEN` and `OPENAI_API_KEY`, respectively.
+1. Make an account on [Etherscan][Etherscan API] and and generate an API key.
+   Although they have a premium API, the free tier is sufficient.
+1. Set the bot token, OpenAI API key, and Etherscan API key in your Replit
+   environment. Give them the respective variable names:
+
+   * `TOKEN`
+   * `OPENAI_API_KEY`
+   * `ETHERSCAN_API_KEY`
 
    ![Screenshot showing where to load secrets](images/variables.png)
 
