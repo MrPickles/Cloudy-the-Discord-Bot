@@ -15,9 +15,10 @@ indie hackers. Cloudy has various talents depending on the situation:
 * **Interested in Crypto?** Cloudy will get you real time data on Ethereum. Now
   you can stop spamming refresh on your Coinbase tab!
 
-### You can try out the live bot by visiting [this link][invite link].
+### Try out the live bot by visiting [this link][invite link]. Also be sure to check out the [Demo Video][loom].
 
-**Imagine an embedded demo video here...**
+[![](images/loom.png)][loom]
+
 
 _Cloudy was proudly built on [Replit][replit] using the [OpenAI API][],
 [Etherscan API][], and [discord.py][]. You can view the [REPL][repl] or browse
@@ -233,3 +234,4 @@ questions, comments, or feedback. I'd love to hear from you._
 [app docs]: https://discordpy.readthedocs.io/en/stable/discord.html#discord-intro
 [discord-py-slash-command]: https://discord-py-slash-command.readthedocs.io/en/latest/index.html
 [slash commands]: https://www.youtube.com/watch?v=4XxcpBxSCiU
+[loom]: https://www.loom.com/share/25d612c2625c4321a899a14e30b868d9
