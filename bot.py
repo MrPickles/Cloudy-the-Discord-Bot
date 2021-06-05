@@ -327,7 +327,7 @@ class Cloudy(commands.Bot):
                     return
                 ethusd = round(price_data["ethusd"], 2)
                 btcusd = round(price_data["btcusd"], 2)
-                timestamp = price_data["timestamp"].strftime("%B %-m, %Y %H:%M UTC")
+                timestamp = price_data["timestamp"].strftime("%B %-d, %Y %H:%M UTC")
                 await ctx.send(
                     dedent(
                         f"""
@@ -365,7 +365,7 @@ class Cloudy(commands.Bot):
                 if "error" in balance_data:
                     await ctx.send(f"{balance_data['error']} - `{wallet}`")
                     return
-                timestamp = balance_data["timestamp"].strftime("%B %-m, %Y %H:%M UTC")
+                timestamp = balance_data["timestamp"].strftime("%B %-d, %Y %H:%M UTC")
                 ether = balance_data["ether"]
                 usd = round(balance_data["usd"], 2)
                 await ctx.send(f"As of {timestamp}, the wallet `{wallet}` has {ether} ETH, or ${usd} USD.")
