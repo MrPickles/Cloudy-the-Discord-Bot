@@ -93,3 +93,12 @@ generic_error_message = "Oops! Cloudy ran into an unknown error while handling y
 
 # The message show show for if Cloudy is missing an Etherscan API key.
 missing_etherscan_api_key_msg = "Sorry! I'm missing an Etherscan API key, so I can't help you right now. Please try again later."
+
+# Hmm, what's this?
+definitely_silent = {
+    "bitcoin": "https://tenor.com/T1Ro.gif",
+    "catan": "https://gfycat.com/flawlessbigheartedcapybara-catan",
+    "elon": "https://gph.is/2M7iQRP",
+    "trigger": "https://gfycat.com/eagereminentamethystinepython",
+    "time": "https://i.imgur.com/CoWZ05t.gif",
+}

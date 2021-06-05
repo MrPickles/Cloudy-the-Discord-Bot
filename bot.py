@@ -53,8 +53,12 @@ class Cloudy(commands.Bot):
             db.switch_mode(guild_id, fixtures.silence)
         mode = db.get_mode(guild_id)
 
-        # Don't say anything when silenced.
+        # Cloudy won't say anything when silenced...or will he?
         if mode == fixtures.silence:
+            for token, gif in fixtures.definitely_silent.items():
+                if token in message.content:
+                    await message.channel.send(gif)
+                    return
             logger.debug("Bot is in silence mode. Skipping interaction in guild %d", guild_id)
             return
 
