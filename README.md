@@ -19,7 +19,6 @@ indie hackers. Cloudy has various talents depending on the situation:
 
 [![](images/loom.png)][loom]
 
-
 _Cloudy was proudly built on [Replit][replit] using the [OpenAI API][],
 [Etherscan API][], and [discord.py][]. You can view the [REPL][repl] or browse
 the [source code][gh]. Follow [@liuandrewk][twitter] on Twitter if you have any

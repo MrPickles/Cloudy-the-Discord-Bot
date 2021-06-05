@@ -47,10 +47,6 @@ class Cloudy(commands.Bot):
         if message.author == self.user:
             return
 
-        if message.channel.id == 326580881965842433:
-            # TODO: for now, skip the general channel
-            return
-
         guild_id = message.guild.id
         # If there's no OpenAI API key, don't enable chat features.
         if openai.api_key is None:
@@ -133,13 +129,10 @@ class Cloudy(commands.Bot):
     def _init_slash_commands(self):
         """Initializes all slash commands for this bot."""
         cmd = SlashCommand(self, sync_commands=True)
-        # TODO: Remove guild whitelisting.
-        guild_ids = [326580881965842433]
        
         @cmd.slash(
             name="help",
             description="Get help and usage details for this bot.",
-            guild_ids=guild_ids,
         )
         async def _help(ctx):
             """Displays the help message for this bot."""
@@ -148,7 +141,6 @@ class Cloudy(commands.Bot):
         @cmd.slash(
             name="about",
             description="Show general information about this bot.",
-            guild_ids=guild_ids,
         )
         async def _about(ctx):
             """Displays the introductory message for this bot."""
@@ -157,7 +149,6 @@ class Cloudy(commands.Bot):
         @cmd.slash(
             name="metrics",
             description="Show global statistics about this bot.",
-            guild_ids=guild_ids,
         )
         async def _metrics(ctx):
             """Displays global statistics about this bot."""
@@ -174,7 +165,6 @@ class Cloudy(commands.Bot):
         @cmd.slash(
             name="status",
             description="Get the general bot status and latency.",
-            guild_ids=guild_ids,
         )
         async def _status(ctx):
             """Displays the bot's interaction mode and latency."""
@@ -199,7 +189,6 @@ class Cloudy(commands.Bot):
         @cmd.slash(
             name="switch",
             description="Change the bot interaction mode.",
-            guild_ids=guild_ids,
             options=[
                 create_option(
                     name="mode",
@@ -231,7 +220,6 @@ class Cloudy(commands.Bot):
         @cmd.slash(
             name="engines",
             description="List available GPT-3 engines.",
-            guild_ids=guild_ids,
         )
         async def _engines(ctx):
             """Lists the available GPT-3 engines.
@@ -251,7 +239,6 @@ class Cloudy(commands.Bot):
         @cmd.slash(
             name="complete",
             description="Send raw input into GPT-3 (not recommended).",
-            guild_ids=guild_ids,
             options=[
                 create_option(
                     name="prompt",
@@ -276,7 +263,6 @@ class Cloudy(commands.Bot):
     
         @cmd.slash(
             name="amongus",
-            guild_ids=guild_ids,
             description="View the maps in Among Us.",
             options=[
                 create_option(
@@ -313,7 +299,6 @@ class Cloudy(commands.Bot):
             base="eth",
             name="price",
             description="Fetches the current price of Ethereum in USD.",
-            guild_ids=guild_ids,
         )
         async def _price(ctx):
             await ctx.defer()
@@ -345,7 +330,6 @@ class Cloudy(commands.Bot):
             base="eth",
             name="balance",
             description="Fetches the balance of an Ethereum and its value in USD.",
-            guild_ids=guild_ids,
             options=[
                 create_option(
                     name="wallet",
